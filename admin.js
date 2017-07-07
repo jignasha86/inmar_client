@@ -1,7 +1,8 @@
+var baseurl = location.protocol+'//'+location.hostname+':8000/api/v1/'
 var myApp = angular.module('myApp', ['ng-admin']);
 myApp.config(['NgAdminConfigurationProvider', function (nga) {
     var admin = nga.application('Inmar')
-    .baseApiUrl('http://149.56.237.37:8000/api/v1/'); 
+    .baseApiUrl(baseurl); 
     var location = nga.entity('location');
     location.listView().fields([
         nga.field('id'),
@@ -15,7 +16,20 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
     ]);
 
     location.editionView().fields(location.creationView().fields());
-    
+
+    location.showView().fields([
+      nga.field('name'),
+      nga.field('departments', 'referenced_list')
+          .targetEntity(nga.entity('department'))
+          .targetReferenceField('location')
+          .targetFields([
+              nga.field('id'),
+              nga.field('name'),
+              nga.field('created_at'),
+          ])
+    ])
+
+    location.listView().listActions(['show', 'delete']);
     admin.addEntity(location);
 
     var department = nga.entity('department');
@@ -42,6 +56,20 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
           .targetEntity(location)
           .targetField(nga.field('name')),
     ]);
+
+    department.showView().fields([
+      nga.field('name'),
+      nga.field('categories', 'referenced_list')
+          .targetEntity(nga.entity('category'))
+          .targetReferenceField('department')
+          .targetFields([
+              nga.field('id'),
+              nga.field('name'),
+              nga.field('created_at'),
+          ])
+    ])
+
+    department.listView().listActions(['show', 'delete']);
 
     admin.addEntity(department);
 
@@ -71,6 +99,20 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
           .targetField(nga.field('name')),
     ]);
 
+    category.showView().fields([
+      nga.field('name'),
+      nga.field('subcategories', 'referenced_list')
+          .targetEntity(nga.entity('subcategory'))
+          .targetReferenceField('category')
+          .targetFields([
+              nga.field('id'),
+              nga.field('name'),
+              nga.field('created_at'),
+          ])
+    ])
+
+    category.listView().listActions(['show', 'delete']);
+
     admin.addEntity(category);
 
     var subcategory = nga.entity('subcategory');
@@ -98,6 +140,20 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
           .targetEntity(category)
           .targetField(nga.field('name')),
     ]);
+
+    subcategory.showView().fields([
+      nga.field('name'),
+      nga.field('products', 'referenced_list')
+          .targetEntity(nga.entity('flatdata'))
+          .targetReferenceField('subcategory')
+          .targetFields([
+              nga.field('id'),
+              nga.field('name'),
+              nga.field('created_at'),
+          ])
+    ])
+
+    subcategory.listView().listActions(['show', 'delete']);
 
     admin.addEntity(subcategory);
 
@@ -147,13 +203,45 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
     nga.configure(admin);
 }]);
 
+myApp.config(['$httpProvider', function($httpProvider) {
+    $httpProvider.interceptors.push(function() {
+        return {
+            request: function(config) {
+                if (/\/department$/.test(config.url) && config.params._filters && config.params._filters.location) {
+                    config.url = config.url.replace('department', 'location/' + config.params._filters.location + '/department');
+                    delete config.params._filters // have to delete inside , outside one wont work
+                }
+                else if (/\/category$/.test(config.url) && config.params._filters && config.params._filters.department) {
+                    config.url = config.url.replace('category', 'department/' + config.params._filters.department + '/category');
+                    delete config.params._filters // have to delete inside , outside one wont work
+                }
+                else if (/\/subcategory$/.test(config.url) && config.params._filters && config.params._filters.category) {
+                    config.url = config.url.replace('subcategory', 'category/' + config.params._filters.category + '/subcategory');
+                    delete config.params._filters // have to delete inside , outside one wont work
+                }
+                else if (/\/flatdata$/.test(config.url) && config.params._filters && config.params._filters.subcategory) {
+                    config.url = config.url.replace('flatdata', 'subcategory/' + config.params._filters.subcategory + '/product');
+                    delete config.params._filters // have to delete inside , outside one wont work
+                }
+                if(config.params && config.params._sort) {
+                   delete config.params._sort
+                }
+                if(config.params && config.params._order) {
+                   delete config.params._order
+                }
+                return config;
+            },
+        };
+    });
+}]);
+
 myApp.config(['RestangularProvider', function (RestangularProvider) {
     RestangularProvider.addFullRequestInterceptor(function(element, operation, what, url, headers, params) {
         if (operation == "getList") {
-            if (params._page) {
+            /*if (params._page) {
                 params._start = (params._page - 1) * params._perPage;
                 params._end = params._page * params._perPage;
-            }
+            }*/
             delete params._page;
             delete params._perPage;
             if (params._sortField) {
@@ -162,13 +250,13 @@ myApp.config(['RestangularProvider', function (RestangularProvider) {
                 delete params._sortField;
                 delete params._sortDir;
             }
-            if (params._filters) {
+            /*if (params._filters) {
                 for (var filter in params._filters) {
                     params[filter] = params._filters[filter];
                 }
                 delete params._filters;
-            }
+            }*/
         }
-        return { params: "" };
+        return { params: params };
     });
 }]);
