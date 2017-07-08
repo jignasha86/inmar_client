@@ -207,19 +207,20 @@ myApp.config(['$httpProvider', function($httpProvider) {
     $httpProvider.interceptors.push(function() {
         return {
             request: function(config) {
-                if (/\/department$/.test(config.url) && config.params._filters && config.params._filters.location) {
+                if (/\/department$/.test(config.url) && config.params && config.params._filters && config.params._filters.location) {
                     config.url = config.url.replace('department', 'location/' + config.params._filters.location + '/department');
                     delete config.params._filters // have to delete inside , outside one wont work
                 }
-                else if (/\/category$/.test(config.url) && config.params._filters && config.params._filters.department) {
+                else if (/\/category$/.test(config.url) && config.params && config.params._filters && config.params._filters.department) {
+                    console.log(config.params)
                     config.url = config.url.replace('category', 'department/' + config.params._filters.department + '/category');
                     delete config.params._filters // have to delete inside , outside one wont work
                 }
-                else if (/\/subcategory$/.test(config.url) && config.params._filters && config.params._filters.category) {
+                else if (/\/subcategory$/.test(config.url) && config.params && config.params._filters && config.params._filters.category) {
                     config.url = config.url.replace('subcategory', 'category/' + config.params._filters.category + '/subcategory');
                     delete config.params._filters // have to delete inside , outside one wont work
                 }
-                else if (/\/flatdata$/.test(config.url) && config.params._filters && config.params._filters.subcategory) {
+                else if (/\/flatdata$/.test(config.url) && config.params && config.params._filters && config.params._filters.subcategory) {
                     config.url = config.url.replace('flatdata', 'subcategory/' + config.params._filters.subcategory + '/product');
                     delete config.params._filters // have to delete inside , outside one wont work
                 }
