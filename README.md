@@ -12,7 +12,7 @@
   4) copy Dockerfile from source code to outside
      eg **mv inmar_client Dockerfile ../**
   5) run **docker build -t apache .**
-  6) run **docker run -p 3002:80 -dit --name apache apache2**
+  6) run **docker run -p 3002:80 -dit --name apache apache**
  
 ###  Open http://localhost:3002/ or http://{ip}:3002/ in browser
   
