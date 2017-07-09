@@ -1,4 +1,4 @@
-var baseurl = location.protocol+'//'+location.hostname+':8000/api/v1/'
+var baseurl = location.protocol+'//'+location.hostname+':3001/api/v1/'
 var myApp = angular.module('myApp', ['ng-admin']);
 myApp.config(['NgAdminConfigurationProvider', function (nga) {
     var admin = nga.application('Inmar')
@@ -8,7 +8,6 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
         nga.field('id'),
         nga.field('name').isDetailLink(true),
         nga.field('created_at'),
-        nga.field('updated_at'),
     ]);
 
     location.creationView().fields([
@@ -38,7 +37,6 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
         nga.field('name').isDetailLink(true),
         nga.field('location.name').label('Location'),
         nga.field('created_at'),
-        nga.field('updated_at'),
     ]);
 
     department.creationView().fields([
@@ -80,7 +78,6 @@ myApp.config(['NgAdminConfigurationProvider', function (nga) {
         nga.field('department.location.name').label('Location'),
         nga.field('department.name').label('Department'),
         nga.field('created_at'),
-        nga.field('updated_at'),
     ]);
 
     category.creationView().fields([
