@@ -14,7 +14,7 @@
   5) run **docker build -t apache .**
   6) run **docker run -p 3002:80 -dit --name apache apache**
  
-###  Open http://localhost:3002/ or http://{ip}:3002/ in browser
+###  Open http://localhost:3002/ or http://{your_ip}:3002/ in browser
   
 
 
