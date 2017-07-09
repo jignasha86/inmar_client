@@ -8,7 +8,7 @@
 ## Steps to Install using docker
   1) Install docker on your local machine
   2) create new directory eg mkdir test & go to new dir 
-  3) run git clone to get source code of project
+  3) run git clone https://github.com/jignasha86/inmar_client.git
   4) copy Dockerfile from source code to outside
      eg **mv inmar_client Dockerfile ../**
   5) run **docker build -t apache .**
