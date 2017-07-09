@@ -1,6 +1,6 @@
 # inmar_client
 
-### This is frontend client based on angular js module ng-admindocker build -t apache .
+### This is frontend client based on angular js module ng-admin
 
 ## Pre-requisites
    Any web server
@@ -14,7 +14,7 @@
   5) run **docker build -t apache .**
   6) run **docker run -p 3002:80 -dit --name apache apache2**
  
-##  Open http://localhost:3002/ or http://{ip}:3002/ in browser
+###  Open http://localhost:3002/ or http://{ip}:3002/ in browser
   
 
 
